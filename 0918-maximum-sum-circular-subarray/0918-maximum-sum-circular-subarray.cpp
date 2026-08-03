@@ -2,7 +2,6 @@ class Solution {
 public:
     int maxSubarraySumCircular(vector<int>& nums) {
         int n = nums.size();
-        int ans;
         int res = nums[0];
         int maxbestending = nums[0];
         int minbestending = nums[0];
