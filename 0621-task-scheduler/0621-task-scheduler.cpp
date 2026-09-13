@@ -8,31 +8,35 @@ public:
     // }
     int leastInterval(vector<char>& tasks, int n) {
         int m = tasks.size();
-        unordered_map<char, int>mp;
-        for(auto x : tasks) mp[x]++;
-
-        // priority_queue< pair<int, string>, vector<pair<int, string>, cmp>pq;
-        priority_queue<int>pq;
-        for(auto x: mp){
-            pq.push({x.second});
+        unordered_map<char, int>freq;
+        unordered_map<char, int>free;
+        for(auto x : tasks){
+            freq[x]++;
+            free[x] = 1;
         }
-        int time = 0;
+        priority_queue<pair<int, char>>pq;
+        for(auto x: freq){
+            pq.push({x.second, x.first});
+        }
+        int seat = 1;
         while(!pq.empty()){
-            vector<int>temp;
-            for(int i = 1;i<= n+1;i++){
-                if(!pq.empty()){
-                    int fre = pq.top();
-                    pq.pop();
-                    fre--;
-                    temp.push_back(fre);
+            vector<pair<int, char>>pulled;
+            while(!pq.empty()){
+                pair<int, char> p = pq.top();
+                pq.pop();
+                if(free[p.second] <= seat){
+                    if(p.first > 1)
+                        pq.push({p.first - 1, p.second});
+                    free[p.second] = seat+ n + 1;
+                    break;
+                }
+                else {
+                    pulled.push_back(p);
                 }
             }
-            for(auto x: temp){
-                if(x > 0)pq.push(x);
-            }
-            if(pq.empty()) time += temp.size();
-            else time += n+1;
+            for(int i =0;i<pulled.size();i++) pq.push(pulled[i]);
+            seat++;
         }
-        return time ;
+        return seat - 1;
     }
 };
