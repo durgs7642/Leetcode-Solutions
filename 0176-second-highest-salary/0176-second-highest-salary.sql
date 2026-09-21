@@ -1,4 +1,10 @@
 -- Write your PostgreSQL query statement below
-SELECT MAX(salary) AS SecondHighestSalary
+SELECT
+(
+SELECT DISTINCT salary
+FROM
+(SELECT salary, DENSE_RANK() OVER(ORDER BY salary DESC) as rank
 FROM Employee
-WHERE salary < (SELECT MAX(salary) FROM Employee); 
+) AS RankedSalaries
+WHERE rank = 2
+) AS Secondhighestsalary ;
