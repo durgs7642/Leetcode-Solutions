@@ -8,14 +8,20 @@
  * };
  */
 class Solution {
-public:
+public: 
+    TreeNode* ans = NULL;
+    int helper(TreeNode* root, TreeNode* p, TreeNode* q){
+        if(root == NULL) return 0;
+        int left = helper(root->left, p, q);
+        int right = helper(root->right, p, q);
+        int self = 0;
+        if(root == p || root == q) self = 1;
+        int total = self  + left + right ;
+        if(total == 2 && ans == NULL) ans = root;
+        return total;
+    }
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-           if(root == NULL || p == root || q == root) return root;
-
-        TreeNode* left = lowestCommonAncestor(root->left, p, q);
-        TreeNode* right = lowestCommonAncestor(root->right, p, q);
-        if(left == NULL) return right;
-        else if(right == NULL) return left;
-        else return root;
+        int total = helper(root, p, q);
+        return ans ;
     }
 };
