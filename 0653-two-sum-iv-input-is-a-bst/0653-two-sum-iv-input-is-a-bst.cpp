@@ -9,56 +9,53 @@
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
-class BSTIterator {
-    stack<TreeNode*> mystack;
-    bool reverse = true;
-public:
-    BSTIterator(TreeNode* root, bool isReverse) {
-        reverse = isReverse;    
-        pushAll(root);
-    }
-    
-    int next() {
-        TreeNode* temp = mystack.top();
-        mystack.pop();
-        if(!reverse) pushAll(temp->right);
-        else pushAll(temp->left);
-        return temp->val;
-    }
-    
-    bool hasNext() {
-        return !mystack.empty();
-    }
-
-    private:
-    void pushAll(TreeNode* node){
-        for( ; node != NULL; ){
-            mystack.push(node);
-            if(reverse == true){
-              node = node->right;
-            }
-            else {
-                node = node->left;
-            }
-        }
-    }
-};
-
-
 class Solution {
 public:
-    bool findTarget(TreeNode* root, int k) {
-        if(!root) return false;
-        BSTIterator l(root, false); 
-        BSTIterator r(root, true);
+    stack<TreeNode*>asc, desc ;
+    TreeNode* getSmall(){
+        if(asc.empty()) return NULL;
+        TreeNode* small = asc.top();
+        asc.pop();
+        TreeNode* rightchild = small->right ;
+        while(rightchild){
+            asc.push(rightchild);
+            rightchild = rightchild->left;
+        }
+        return small;
+    }
+    
+    TreeNode* getBig(){
+        if(desc.empty()) return NULL;
+        TreeNode* big = desc.top();
+        desc.pop();
+        TreeNode* leftchild = big->left ;
+        while(leftchild){
+            desc.push(leftchild);
+            leftchild = leftchild->right;
+        }
+        return big;
+    }
 
-        int i = l.next();
-        int j = r.next();
-        while(i<j){
-            if(i+j == k) return true;
-            else if(i+j < k) i = l.next();
-            else j = r.next();
-        } 
-        return false;
+    bool findTarget(TreeNode* root, int k) {
+        if(root == NULL) return false;
+        TreeNode* t = root ;
+        while(t){
+            asc.push(t);
+            t= t->left ;
+        }
+        t = root;
+        while(t){
+            desc.push(t);
+            t = t->right;
+        }
+        TreeNode* i = getSmall();
+        TreeNode* j = getBig();
+        while(i && j && i != j && i->val <= j->val){
+            int sum = i->val + j->val;
+            if(sum  == k) return true;
+            if(sum > k) j = getBig();
+            else i = getSmall();
+        }
+        return false; 
     }
 };
